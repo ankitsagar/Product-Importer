@@ -10,6 +10,8 @@ class HomePage(TemplateView):
     template_name = "product/homepage.html"
 
     def get(self, request, **kwargs):
+        # If products are there then redirect to list page otherwise ask user
+        # to upload products
         if Product.objects.all().count():
             return reverse_lazy("product_list")
         else:
