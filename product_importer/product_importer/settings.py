@@ -81,8 +81,12 @@ WSGI_APPLICATION = 'product_importer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME') or 'importer',
+        'USER': os.environ.get('DB_USER') or 'local',
+        'PASSWORD': os.environ.get('DB_PASS') or 'local',
+        'HOST': os.environ.get('DB_HOST') or 'localhost',
+        'PORT': os.environ.get('DB_PORT') or '5432',
     }
 }
 

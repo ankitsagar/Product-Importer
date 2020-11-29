@@ -75,6 +75,8 @@
             setProgress(data.state, data.details);
             setTimeout(getProgressData, 500, progressUrl);
           } else if (data.state === "SUCCESS") {
+            $('#progress-bar').hide();
+            $('#progress-bar-message').hide();
             $("#final-message").text(data.details.message)
             $("#import-summary").text(
               'Imported: ' + data.details.valid_products + 
