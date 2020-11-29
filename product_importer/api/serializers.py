@@ -1,5 +1,7 @@
 # Django Imports
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
 # DRF Imports
 from rest_framework import serializers
@@ -9,6 +11,7 @@ from product.tasks import import_bulk_product
 
 # Other Imports
 import os
+import time
 
 
 def validate_file_extension(value):
@@ -26,8 +29,15 @@ class FileUploadSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         _file = validated_data['_file']
-        import_bulk_product(_file)
 
+        # Taking current timestamp as name so it'll be unique most of the time
+        file_name = "tmp/" + str(time.time()) + ".csv"
+        path = default_storage.save(
+            file_name, ContentFile(_file.read())
+        )
+        # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        task = import_bulk_product.delay(path)
+        self.task_id = task.id
         # this function has to return something otherwise DRF will raise
         # exception
         return "success"
