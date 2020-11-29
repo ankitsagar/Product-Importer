@@ -42,12 +42,16 @@ def import_bulk_product(self, file_path):
         raise Ignore()
     lines = csv.reader(io_string, delimiter=',')
     total_products = len(list(lines))
-    # After couting total products move the file cursor to starting and skip 1
-    # line to avoid header
-    io_string.seek(1)
+    # After couting total products move the file cursor to starting
+    io_string.seek(0)
     valid_products = 0
     invalid_products = 0
+    count = 0
     for line in lines:
+        # Skipping header
+        if not count:
+            count = 1
+            continue
         try:
             name = line[0]
             sku = line[1]
