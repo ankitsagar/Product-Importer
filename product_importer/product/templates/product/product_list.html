@@ -10,35 +10,40 @@
   </head>
   <body>
     
-    <form method="get">
-      <div class="row">
-        <input class="col-3 form-control" name="q" id="search-input" type="text" placeholder="Type name and SKU to search" value="{{ request.GET.q }}">
-        <div class="col-3">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="filter_by" id="Radios1" value="all" 
-                  {% if not request.GET.filter_by or request.GET.filter_by == "all" %} checked {% endif %}>
-            <label class="form-check-label" for="Radios1">
-              All
-            </label>
+      <form method="get">
+        <div class="row">
+          <input class="col-3 form-control" name="q" id="search-input" type="text" placeholder="Type name and SKU to search" value="{{ request.GET.q }}">
+          <div class="col-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="filter_by" id="Radios1" value="all" 
+                    {% if not request.GET.filter_by or request.GET.filter_by == "all" %} checked {% endif %}>
+              <label class="form-check-label" for="Radios1">
+                All
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="filter_by" id="Radios2" value="active"
+                    {% if request.GET.filter_by == "active" %} checked {% endif %}>
+              <label class="form-check-label" for="Radios2">
+                Active
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="filter_by" id="Radios3" value="inactive"
+                    {% if request.GET.filter_by == "inactive" %} checked {% endif %}>
+              <label class="form-check-label" for="Radios3">
+                Inactive
+              </label>
+            </div>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="filter_by" id="Radios2" value="active"
-                  {% if request.GET.filter_by == "active" %} checked {% endif %}>
-            <label class="form-check-label" for="Radios2">
-              Active
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="filter_by" id="Radios3" value="inactive"
-                  {% if request.GET.filter_by == "inactive" %} checked {% endif %}>
-            <label class="form-check-label" for="Radios3">
-              Inactive
-            </label>
-          </div>
+          <button type="submit" class="col-2 btn btn-primary">Apply Search and Filter</button>
         </div>
-        <button type="submit" class="col-2 btn btn-primary">Apply Search and Filter</button>
-      </div>
-    </form>
+      </form>
+
+      <a href="{% url 'products:product_import' %}" class="col-1 float-right btn btn-primary">
+        Import Products
+      </a>
+
 
     <form method="post" id="bulk-action-form">
       <div class="form-group">

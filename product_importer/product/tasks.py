@@ -92,5 +92,8 @@ def import_bulk_product(self, file_path):
             "invalid_products": invalid_products
         }
     )
+
+    tmp_file.close()
+    os.remove(file_path)
     # ignore the task so no other state is recorded
     raise Ignore()

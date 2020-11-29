@@ -13,8 +13,7 @@ from .models import Product
 from .utils import CustomPaginator
 
 
-class HomePage(TemplateView):
-    template_name = "product/homepage.html"
+class HomePage(View):
 
     def get(self, request, **kwargs):
         # If products are there then redirect to list page otherwise ask user
@@ -22,7 +21,13 @@ class HomePage(TemplateView):
         if Product.objects.all().count():
             return HttpResponseRedirect(reverse_lazy("products:product_list"))
         else:
-            return super().get(request, **kwargs)
+            return HttpResponseRedirect(reverse_lazy(
+                "products:product_import")
+            )
+
+
+class ProductImport(TemplateView):
+    template_name = "product/importer.html"
 
 
 class BulkActions(View):
