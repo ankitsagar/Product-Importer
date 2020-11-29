@@ -21,7 +21,7 @@ def import_bulk_product(self, file_path):
     Assumes the file has name at first, sku at second and description as third
     index with delimiter ','.
     """
-    tmp_file = open(os.path.join(settings.MEDIA_ROOT, file_path), 'r', newline="")
+    tmp_file = open(os.path.join(settings.MEDIA_ROOT, file_path), 'r')
     try:
         decoded_file = tmp_file.read()
         io_string = io.StringIO(decoded_file)

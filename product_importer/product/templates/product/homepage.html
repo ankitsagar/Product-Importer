@@ -25,6 +25,9 @@
                 onclick="document.getElementById('excel-input-file').click()">
           Import Products
         </button>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary" id="product-list">
+          Go to product list page
+        </a>
       </div>
     </div>
 
@@ -32,6 +35,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
   <script>
 
+    $('#product-list').hide();
     (function () {
         var fileInputElm = document.getElementById('excel-input-file');
         fileInputElm.addEventListener('change', uploadFile, false);
@@ -71,8 +75,12 @@
             setProgress(data.state, data.details);
             setTimeout(getProgressData, 500, progressUrl);
           } else if (data.state === "SUCCESS") {
-            // TODO: Show product list button page 
             $("#final-message").text(data.details.message)
+            $("#import-summary").text(
+              'Imported: ' + data.details.valid_products + 
+              ' Rejected: ' + data.details.invalid_products
+            );
+            $('#product-list').show();
           } else if (data.state === "FAILURE") {
             $('#import-button').show();
             $("#final-message").text(data.details.message)
