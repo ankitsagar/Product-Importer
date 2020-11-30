@@ -27,11 +27,9 @@ def import_bulk_product(self, file_path):
     Assumes the file has name at first, sku at second and description as third
     index with delimiter ','.
     """
-    print("Running task ========> %s", file_path)
     print("File Exists:", default_storage.exists(file_path))
-    read_file = default_storage.open(file_path)
-    print("Read file------>", read_file)
-    tmp_file = open(os.path.join(settings.MEDIA_ROOT, file_path), 'r')
+    tmp_file = default_storage.open(file_path, mode='r')
+    # tmp_file = open(os.path.join(settings.MEDIA_ROOT, file_path), 'r')
     try:
         decoded_file = tmp_file.read()
         io_string = io.StringIO(decoded_file)
@@ -58,7 +56,6 @@ def import_bulk_product(self, file_path):
     invalid_products = 0
     count = 0
     for line in lines:
-        print("Line====>", line)
         # Skipping header
         if not count:
             count = 1
@@ -109,6 +106,6 @@ def import_bulk_product(self, file_path):
     )
 
     tmp_file.close()
-    os.remove(file_path)
+    default_storage.delete(file_path)
     # ignore the task so no other state is recorded
     raise Ignore()

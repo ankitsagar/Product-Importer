@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'product',
-    'api'
+    'api',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -186,3 +187,11 @@ LOGGING = {
 
 import logging.config  # noqa
 logging.config.dictConfig(LOGGING)
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_S3_REGION_NAME = os.environ['AWS_REGION']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_BUCKET']
+AWS_DEFAULT_ACL = os.environ['AWS_ACL']
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET']
