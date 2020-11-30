@@ -12,6 +12,10 @@ import traceback
 import csv
 import io
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 @task(bind=True)
@@ -21,6 +25,7 @@ def import_bulk_product(self, file_path):
     Assumes the file has name at first, sku at second and description as third
     index with delimiter ','.
     """
+    logger.info("Running task ========> %s", file_path)
     tmp_file = open(os.path.join(settings.MEDIA_ROOT, file_path), 'r')
     try:
         decoded_file = tmp_file.read()
@@ -48,6 +53,7 @@ def import_bulk_product(self, file_path):
     invalid_products = 0
     count = 0
     for line in lines:
+        logger.info("Line====>", line)
         # Skipping header
         if not count:
             count = 1

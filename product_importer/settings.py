@@ -135,3 +135,54 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_HOST') or 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+
+LOGGING_CONFIG = None
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime}:{levelname}:{module}:{lineno}:{message}',
+            'style': '{'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        # 'level': 'DEBUG',
+        'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO')
+    },
+    'loggers': {
+        'django.db': {
+            'handlers': [],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': [],
+        },
+        'py.warnings': {
+            'handlers': [],
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
+import logging.config  # noqa
+logging.config.dictConfig(LOGGING)
