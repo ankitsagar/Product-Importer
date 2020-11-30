@@ -12,6 +12,10 @@ from product.tasks import import_bulk_product
 # Other Imports
 import os
 import time
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def validate_file_extension(value):
@@ -38,6 +42,7 @@ class FileUploadSerializer(serializers.Serializer):
         # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         task = import_bulk_product.delay(path)
         self.task_id = task.id
+        logger.info("Task ID: %s, File Name: %s", task.id, file_name)
         # this function has to return something otherwise DRF will raise
         # exception
         return "success"
