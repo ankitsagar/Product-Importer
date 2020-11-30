@@ -39,6 +39,8 @@ class FileUploadSerializer(serializers.Serializer):
         path = default_storage.save(
             file_name, ContentFile(_file.read())
         )
+        logger.info("File Size: %s", default_storage.size(path))
+        logger.info("File Exists: %s", default_storage.exists(path))
         # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         task = import_bulk_product.delay(path)
         self.task_id = task.id
