@@ -1,2 +1,2 @@
 web: gunicorn product_importer.wsgi
-worker: celery -A product_importer worker -l info
+worker: celery worker --app=product_importer
