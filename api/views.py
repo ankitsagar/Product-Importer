@@ -1,3 +1,6 @@
+# Django Import
+from django.conf import settings
+
 # DRF Imports
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -10,6 +13,8 @@ from product.constants import TaskStates
 
 # Other imports
 from celery.result import AsyncResult
+import boto3
+import time
 
 
 # I have not designed user login and permission modules so all APIs are open
@@ -44,3 +49,25 @@ class GetProgress(RetrieveAPIView):
             details = result.info
 
         return Response({"state": result.state, "details": details})
+
+
+class GetUploadURL(RetrieveAPIView):
+
+    def get(self, request, **kwargs):
+        filename = request.query_params.get("filename")
+        if filename:
+            filename = "tmp/" + filename
+        else:
+            filename = "tmp/" + str(time.time()) + ".csv"
+        s3 = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME)
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
+
+        return Response(
+            s3.generate_presigned_post(
+                Bucket=bucket,
+                Key=filename,
+                Fields={},
+                Conditions=[],
+                ExpiresIn=3600
+            )
+        )

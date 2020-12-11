@@ -21,13 +21,24 @@
     </div>
     <div class="container" style="position: relative; top: 50vh; width: 100vw">
       <div class="col-md-12 text-center">
+        <!--Import button-->
         <button type="button" class="btn btn-primary" id="import-button" 
                 onclick="document.getElementById('excel-input-file').click()">
           Import Products
         </button>
+
+        <!--product list-->
         <a href="{% url 'products:product_list' %}" class="btn btn-primary" id="product-list">
           Go to product list page
         </a>
+        
+        <!--loader-->
+        <div id='upload-loader'>
+          <div class="spinner-grow" role="status">
+            <span class="sr-only">Uploading file please wait...</span>
+          </div>
+          <div>Uploading file please wait...</div>
+        <div>
       </div>
     </div>
 
@@ -36,6 +47,7 @@
   <script>
 
     $('#product-list').hide();
+    $('#upload-loader').hide();
     (function () {
         var fileInputElm = document.getElementById('excel-input-file');
         fileInputElm.addEventListener('change', uploadFile, false);
@@ -43,24 +55,46 @@
 
     var task_id = null;
     function uploadFile(e) {
-      var files = e.target.files;      
-      let formData = new FormData(); 
-      formData.append("_file", files[0]);
+      var _file = e.target.files[0]; 
       $.ajax({
-        url: "{% url 'api:file_upload' %}",
-        type: 'POST',
-        data: formData,
+        url: "{% url 'api:get_upload_url' %}",
+        type: 'GET',
         success: function (data) {
             $('#import-button').hide();
-            task_id = data.task_id;
-            var url = getProgressUrl();
-            getProgressData(url);
+            console.log("got data======>", data)
+            uploadFileToS3(_file, data.url, data.fields);
         },
         cache: false,
         contentType: false,
         processData: false
       });
     };
+    
+    function uploadFileToS3(_file, url, fields){
+      let formData = new FormData(); 
+      formData.append("key", fields.key);
+      formData.append("x-amz-algorithm", fields["x-amz-algorithm"]);
+      formData.append("x-amz-credential", fields["x-amz-credential"]);
+      formData.append("x-amz-date", fields["x-amz-date"]);
+      formData.append("policy", fields.policy);
+      formData.append("x-amz-signature", fields["x-amz-signature"]);
+      formData.append("file", _file);
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        beforeSend: function() {
+          $('#upload-loader').show();
+        },
+        success: function (data) {
+          $('#upload-loader').hide();
+          console.log("<=====got s3 resp======>")
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+      });
+    }
 
     function getProgressUrl() {
       var progressUrl = window.location.origin + "/api/get-import-progress/" + task_id;
