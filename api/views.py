@@ -59,7 +59,12 @@ class GetUploadURL(RetrieveAPIView):
             filename = "tmp/" + filename
         else:
             filename = "tmp/" + str(time.time()) + ".csv"
-        s3 = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME)
+        s3 = boto3.client(
+            's3',
+            region_name=settings.AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        )
         bucket = settings.AWS_STORAGE_BUCKET_NAME
 
         return Response(
