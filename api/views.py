@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 # App Imports
-from .serializers import FileUploadSerializer
+from .serializers import FileUploadSerializer, ProcessFileUploadSerializer
 from product.constants import TaskStates
 
 # Other imports
@@ -75,4 +75,19 @@ class GetUploadURL(RetrieveAPIView):
                 Conditions=[],
                 ExpiresIn=3600
             )
+        )
+
+
+class ProcessUploadedFile(CreateAPIView):
+    serializer_class = ProcessFileUploadSerializer
+    permission_classes = []
+    authentication_classes = []
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Proceesing File", "task_id": serializer.task_id},
+            status=status.HTTP_202_ACCEPTED
         )

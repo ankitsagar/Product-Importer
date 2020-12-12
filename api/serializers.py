@@ -48,3 +48,20 @@ class FileUploadSerializer(serializers.Serializer):
         # this function has to return something otherwise DRF will raise
         # exception
         return "success"
+
+
+class ProcessFileUploadSerializer(serializers.Serializer):
+    file_path = serializers.CharField()
+
+    def create(self, validated_data):
+        path = validated_data['file_path']
+
+        logger.info("File Size: %s", default_storage.size(path))
+        logger.info("File Exists: %s", default_storage.exists(path))
+        # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        task = import_bulk_product.delay(path)
+        self.task_id = task.id
+        logger.info("Task ID: %s, Path: %s", task.id, path)
+        # this function has to return something otherwise DRF will raise
+        # exception
+        return "success"

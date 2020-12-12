@@ -79,19 +79,38 @@
       formData.append("policy", fields.policy);
       formData.append("x-amz-signature", fields["x-amz-signature"]);
       formData.append("file", _file);
+      var file_path = fields.key
       $.ajax({
         url: url,
         type: 'POST',
+        enctype:"multipart/form-data",
         data: formData,
         beforeSend: function() {
           $('#upload-loader').show();
         },
         success: function (data) {
-          $('#upload-loader').hide();
-          console.log("<=====got s3 resp======>")
+          processUploadedFile(file_path);
         },
         cache: false,
         contentType: false,
+        processData: false
+      });
+    }
+    
+    function processUploadedFile(file_path) {
+      console.log("file_path======>", file_path)
+      $.ajax({
+        url: "{% url 'api:process_file' %}",
+        type: 'POST',
+        data: JSON.stringify({'file_path': file_path}),
+        contentType: "application/json; charset=UTF-8",
+        success: function (data) {
+          $('#upload-loader').hide();
+          task_id = data.task_id;
+          var url = getProgressUrl();
+          getProgressData(url);
+        },
+        cache: false,
         processData: false
       });
     }
